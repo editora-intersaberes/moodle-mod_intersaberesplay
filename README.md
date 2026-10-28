@@ -56,7 +56,7 @@ Após a instalação, o plugin disponibiliza conteúdo de exemplo (curso e disci
 
 ##  Versão
 
-1.0
+1.0.4
 
 
 ##  Licença
