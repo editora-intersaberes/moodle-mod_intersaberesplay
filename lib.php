@@ -1,16 +1,54 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// @copyright 2026 Editora Intersaberes.
+// @license https://www.gnu.org/licenses/gpl-3.0.txt GNU GPL v3 or later.
 
-require_once('Service/PlayService.php');
+/**
+ * Library of interface functions and constants.
+ *
+ * @package    mod_intersaberesplay
+ * @copyright  2026 Editora Intersaberes
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
+defined('MOODLE_INTERNAL') || die();
 
-function intersaberesplay_add_instance($data, $mform = null)
-{
+require_once($CFG->dirroot . '/mod/intersaberesplay/classes/local/play_service.php');
+use mod_intersaberesplay\local\play_service;
+
+/**
+ * Add a new intersaberesplay activity instance.
+ *
+ * @param stdClass $data The data from the form.
+ * @param stdClass $mform The form instance.
+ * @return int The ID of the created instance.
+ */
+function intersaberesplay_add_instance($data, $mform = null) {
     global $DB;
 
-    // Adiciona timestamps
+    // Add timestamps.
     $data->timecreated = time();
+    $data->timemodified = time();
 
-    // Garante que campos personalizados existam
+    // Store owning course.
+    if (!isset($data->course)) {
+        $data->course = 0;
+    }
+
+    // Ensure that custom fields exist.
     if (!isset($data->curso)) {
         $data->curso = 0;
     }
@@ -22,25 +60,31 @@ function intersaberesplay_add_instance($data, $mform = null)
         $data->targetblank = 0;
     }
 
-    // Insere registro e retorna o ID
+    // Insert record and return the ID.
     $data->id = $DB->insert_record('intersaberesplay', $data);
 
-    // intersaberesplay_grade_item_update($data);
+    // Note: intersaberesplay_grade_item_update($data) is disabled.
 
     return $data->id;
 }
 
-function intersaberesplay_update_instance($data, $mform = null)
-{
+/**
+ * Update an intersaberesplay activity instance.
+ *
+ * @param stdClass $data The data from the form.
+ * @param stdClass $mform The form instance.
+ * @return bool True if successful.
+ */
+function intersaberesplay_update_instance($data, $mform = null) {
     global $DB;
 
-    // Atualiza timestamps
+    // Update timestamps.
     $data->timemodified = time();
 
-    // O Moodle envia o campo "instance" no form ao editar
+    // Moodle sends the "instance" field in the form when editing.
     $data->id = $data->instance;
 
-    // Garante que campos personalizados existam
+    // Ensure that custom fields exist.
     if (!isset($data->curso)) {
         $data->curso = 0;
     }
@@ -52,38 +96,36 @@ function intersaberesplay_update_instance($data, $mform = null)
         $data->targetblank = 0;
     }
 
-    //  intersaberesplay_grade_item_update($data);
+    // Note: intersaberesplay_grade_item_update($data) is disabled.
 
-    // Atualiza o registro
+    // Update the record.
     return $DB->update_record('intersaberesplay', $data);
 }
 
-
 /**
- * cria um registro no mdl_grade_items caso não exista
+ * Creates a record in mdl_grade_items if it does not exist.
  *
- * @param [type] $intersaberesplay
- * @param [type] $grades
- * @return void
+ * @param stdClass $intersaberesplay The activity instance.
+ * @param mixed $grades The grades.
+ * @return bool|int Result of grade_update.
  */
-function intersaberesplay_grade_item_update($intersaberesplay, $grades = null)
-{
+function intersaberesplay_grade_item_update($intersaberesplay, $grades = null) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    $playService = new PlayService();
-    $resposta = $playService->getPesoMaximoProvas([
-        'id_curso_instituicao' =>  $intersaberesplay->curso ?? null,
-        'id_disciplina_instituicao' =>  $intersaberesplay->disciplina ?? null,
+    $playservice = new play_service();
+    $response = $playservice->get_maximum_test_weight([
+        'id_curso_instituicao' => $intersaberesplay->curso ?? null,
+        'id_disciplina_instituicao' => $intersaberesplay->disciplina ?? null,
         'token' => get_config('mod_intersaberesplay', 'token'),
     ]);
-    $resposta = json_decode($resposta, true);
-    
+    $response = json_decode($response, true);
+
     $params = [
         'itemname' => $intersaberesplay->name,
         'gradetype' => GRADE_TYPE_VALUE,
-        'grademax' => $resposta['pesoProva'],
-        'grademin' => 0
+        'grademax' => $response['pesoProva'],
+        'grademin' => 0,
     ];
 
     if ($grades === 'reset') {
@@ -103,40 +145,47 @@ function intersaberesplay_grade_item_update($intersaberesplay, $grades = null)
     );
 }
 
-function intersaberesplay_supports($feature)
-{
+/**
+ * Check whether the intersaberesplay module supports a feature.
+ *
+ * @param string $feature The feature.
+ * @return bool|null True/false if the feature is supported, null if not.
+ */
+function intersaberesplay_supports($feature) {
     switch ($feature) {
         case FEATURE_GRADE_HAS_GRADE:
             return true;
         case FEATURE_GRADE_OUTCOMES:
             return true;
         case FEATURE_MOD_INTRO:
-            return false; // <-- Desativa uso de intro
+            return true;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
         default:
             return null;
     }
 }
 
-
 /**
- * Deletes an instance of the intersaberesplay module
+ * Delete an intersaberesplay activity instance.
  *
- * @param int $id ID of the module instance
- * @return bool true if successful, false otherwise
+ * @param int $id The ID of the module instance.
+ * @return bool True if successful.
  */
-function intersaberesplay_delete_instance($id)
-{
+function intersaberesplay_delete_instance($id) {
     global $DB;
 
-    // Verifica se existe
+    // Check if the record exists.
     if (!$record = $DB->get_record('intersaberesplay', ['id' => $id])) {
         return false;
     }
 
-    // Aqui você pode apagar tabelas relacionadas se houver
-    // Exemplo: $DB->delete_records('intersaberesplay_somechildtable', ['intersaberesplayid' => $id]);
+    // Delete related data if any.
+    // Example: $DB->delete_records('intersaberesplay_somechildtable', ['intersaberesplayid' => $id]).
 
-    // Apaga a instância principal
+    // Delete the main instance.
     $DB->delete_records('intersaberesplay', ['id' => $id]);
 
     return true;

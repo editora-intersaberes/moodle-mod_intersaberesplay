@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Ignore generated archives when exporting
+plugin.zip export-ignore
+*.zip export-ignore
