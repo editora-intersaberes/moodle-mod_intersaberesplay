@@ -44,6 +44,12 @@ Após a instalação, o plugin disponibiliza conteúdo de exemplo (curso e disci
 - Avaliar a experiência do usuário
 - Demonstrar o potencial da plataforma Intersaberes Play
 
+## Comando para criar zip do plugin
+´´´
+    git archive --format=zip --output=plugin.zip --prefix=intersaberesplay/ HEAD
+
+´´´
+
 ##  Autor
 
 **Lucas Almeida Negromonte**

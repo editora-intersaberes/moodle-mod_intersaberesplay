@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<XMLDB PATH="mod/intersaberesplay/db" VERSION="2025110400" COMMENT="Banco de dados do Intersaberes Play" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+<XMLDB PATH="mod/intersaberesplay/db" VERSION="2026072100" COMMENT="Database schema for Intersaberes Play" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
-    <TABLE NAME="intersaberesplay" COMMENT="Armazena instâncias do Intersaberes Play">
+    <TABLE NAME="intersaberesplay" COMMENT="Stores Intersaberes Play activity instances">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
         <FIELD NAME="curso" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0"/>
         <FIELD NAME="disciplina" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0"/>

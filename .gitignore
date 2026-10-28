@@ -1,0 +1,51 @@
+# Moodle Plugin .gitignore
+# Standard Moodle ignores
+
+# Operating system
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.phpstorm.meta.php
+/__phpcbf_memory
+
+# PHP
+.php_cs.cache
+.phpunit.result.cache
+
+# Build
+# /build/
+/dist/
+/vendor/
+/node_modules/
+# # But DO include AMD built files (they must be committed)
+# !amd/build/
+# !amd/build/**
+
+# Testing
+.phpunit/
+.coverage/
+
+# OS
+.env
+.env.local
+.DS_Store
+
+# Editor
+*.code-workspace
+.editorconfig
+
+# Temporary
+*.tmp
+*.temp
+*.bak
+*.backup
+
+plugin.zip
