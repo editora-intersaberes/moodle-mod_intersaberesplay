@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_intersaberesplay';
-$plugin->version   = 2026072102;
+$plugin->version = 2026102800;
 $plugin->requires  = 2015111600; // Moodle 3.0 or later.
-$plugin->release   = '1.0.3';
+$plugin->release = '1.0.4';
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->cron      = 0;
